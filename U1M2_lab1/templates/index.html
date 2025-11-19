@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chatbot</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
+        #chat-container { width: 400px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        #chat-box { height: 300px; overflow-y: scroll; border-bottom: 1px solid #ddd; margin-bottom: 10px; padding: 10px; }
+        .user { text-align: right; color: blue; margin: 5px 0; }
+        .bot { text-align: left; color: green; margin: 5px 0; }
+        input { width: 70%; padding: 10px; }
+        button { width: 25%; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h2 style="text-align: center;">🤖 Chatbot</h2>
+        <div id="chat-box"></div>
+        <div style="display: flex; justify-content: space-between;">
+            <input type="text" id="user-input" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let input = document.getElementById("user-input");
+            let msg = input.value;
+            if (!msg) return;
+
+            let chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<div class="user"><b>You:</b> ${msg}</div>`;
+            input.value = "";
+
+            let response = await fetch("/get_response", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ msg: msg })
+            });
+
+            let data = await response.json();
+            chatBox.innerHTML += `<div class="bot"><b>AI:</b> ${data.response}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
